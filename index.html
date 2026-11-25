@@ -1714,7 +1714,7 @@ applyLang();
     set('unKicker','kicker'); set('unH2', UN.done?'gone':'h2'); set('unLead','lead');
     set('unBtn','btn'); set('kneelSay','kneel'); set('unBadge','badge');
     set('nukeLead','nukeLead'); set('nukeBtn', UN.armed?'armed':(UN.nuked?'fired':'nukeBtn')); set('nukeSub', UN.armed?'sub':'');
-    set('endBig','endBig',true); set('endSub','endSub'); set('againBtn','again'); set('nopeBtn','nope');
+    set('endBig','endBig',true); set('endSub','endSub',true); set('againBtn','again'); set('nopeBtn','nope');
     lines.forEach((el,i)=>{ el.dataset.txt = u('ul'+(i+1)); if(UN.done) el.textContent = '✓ '+el.dataset.txt; });
   }
   const $u = id => document.getElementById(id);
