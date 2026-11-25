@@ -294,6 +294,30 @@ html.locked .unbtn{animation:begPulse 1.5s infinite}
 html.locked body::after{content:"";position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 180px 46px rgba(0,0,0,.6);z-index:60;transition:box-shadow .7s}
 html.uninstalled .kneel{display:none !important}
 html.uninstalled #eyes{display:none !important}
+/* --- intrude / ads / notes --- */
+.intrudetip{display:none;margin:0 0 20px;font-family:var(--mono);font-size:13px;letter-spacing:.1em;color:#e4553c;text-transform:uppercase}
+html.intruded .intrudetip{display:block;animation:unpop .45s ease}
+.unsec .unbtn{display:none}
+html.intruded .unsec .unbtn{display:inline-flex;animation:begPulse 1.5s infinite}
+html.uninstalled .intrudetip{display:none !important}
+.kneel-hub.mini{width:80px;height:80px}
+.kneel-hub.mini .kneel-eye{top:38%;width:8px;height:8px}
+.kneel-hub.mini .kneel-eye.l{left:27%}
+.kneel-hub.mini .kneel-eye.r{right:27%}
+.kneel-hub.mini .kneel-tear{top:50%;left:26%}
+.modal-glyph{font-size:34px;line-height:1;color:#e4553c}
+.unnote{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:#7d6f66;letter-spacing:.04em;min-height:18px}
+.ub.tampered{animation:tamperFlash .5s 3}
+@keyframes tamperFlash{50%{background:#ff2c14;border-color:#ff2c14;color:#fff}}
+.admodal{position:fixed;inset:0;z-index:9200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:20px}
+.admodal.on{display:flex}
+.adcard{position:relative;background:#fff;color:#141210;border-radius:16px;max-width:370px;width:100%;padding:28px 24px 22px;text-align:center;box-shadow:0 40px 100px -30px #000;animation:unpop .25s ease}
+.adclose{position:absolute;top:8px;right:10px;width:28px;height:28px;border-radius:50%;border:0;background:#eee;color:#555;font-size:13px;cursor:pointer;line-height:1}
+.adclose:hover{background:#ddd}
+.adbadge{font-size:10px;letter-spacing:.14em;color:#bbb;text-transform:uppercase;margin-bottom:10px}
+.adcard h4{font-size:18px;letter-spacing:-.02em;margin-bottom:8px}
+.adcard p{font-size:13.5px;color:#666;line-height:1.65}
+.adcount{margin-top:14px;font-family:var(--mono);font-size:11px;color:#c9c3bc}
 html.nuking body > *{filter:blur(11px);transform:scale(1.02);transition:filter 1.6s ease,transform 1.6s ease}
 html.nuking body > .theend,html.nuking body > .flash,html.nuking body > script{filter:none !important;transform:none !important}
 
@@ -707,6 +731,7 @@ html.uninstalled .unlockbox{display:block}
       <div class="kneel-hub"><span class="kneel-eye l"></span><span class="kneel-eye r"></span><span class="kneel-tear"></span></div>
       <p class="kneel-say">求你了……别卸载我。</p>
     </div>
+    <p id="intrudeTip" class="intrudetip"></p>
     <button id="unBtn" class="unbtn">卸载 Hearthly</button>
     <p id="unStatus" class="unstatus">状态：运行中 · 固件 3.0.14</p>
     <p id="unBadge" class="unbadge">✓ Hearthly 已卸载 · 房子回来了</p>
@@ -731,14 +756,25 @@ html.uninstalled .unlockbox{display:block}
 <!-- UNINSTALL DIALOG -->
 <div class="unmodal" id="unModal" role="dialog" aria-modal="true">
   <div class="unmodal-card">
-    <p class="unmodal-ico" id="unIco">⚠</p>
+    <div class="unmodal-ico" id="unIco"></div>
     <h3 id="unTitle"></h3>
     <p class="body" id="unBody"></p>
     <div class="acts">
       <button class="ub" id="unStay">再想想</button>
       <button class="ub danger" id="unGo">我确定要卸载</button>
     </div>
+    <p class="unnote" id="unNote"></p>
     <p class="uncount" id="unCount"></p>
+  </div>
+</div>
+
+<div class="admodal" id="adModal">
+  <div class="adcard">
+    <button class="adclose" id="adClose">✕</button>
+    <p class="adbadge" id="adBadge"></p>
+    <h4 id="adTitle"></h4>
+    <p id="adBody"></p>
+    <p class="adcount" id="adCount"></p>
   </div>
 </div>
 
@@ -1630,7 +1666,9 @@ applyLang();
   const unBtn=$u('unBtn'), unModal=$u('unModal'), unTitle=$u('unTitle'), unBody=$u('unBody'),
         unStay=$u('unStay'), unGo=$u('unGo'), unCount=$u('unCount'), unStatus=$u('unStatus'),
         unBadge=$u('unBadge'), nukewrap=$u('nukewrap'), kneel=$u('kneel'),
-        nukeBtn=$u('nukeBtn'), nukeSub=$u('nukeSub'), flashEl=$u('flash'), theend=$u('theend');
+        nukeBtn=$u('nukeBtn'), nukeSub=$u('nukeSub'), flashEl=$u('flash'), theend=$u('theend'),
+        intrudeTip=$u('intrudeTip'), unIco=$u('unIco'), unNote=$u('unNote'),
+        adModal=$u('adModal'), adClose=$u('adClose'), adBadge=$u('adBadge'), adTitle=$u('adTitle'), adBody=$u('adBody'), adCount=$u('adCount');
 
   const STEPS = [
     { t:'你一定要卸载吗？', b:'我们一直在保护你。窗户、门锁、凌晨三点半的呼吸声，我们都替你听着。', go:'我确定要卸载', stay:'再想想' },
@@ -1642,21 +1680,29 @@ applyLang();
   const CH = '▓░▒█▚▞▙▟╳§▩▨';
   lines.forEach(p=>{ let g=''; for(let i=0;i<14;i++) g+=CH[Math.floor(Math.random()*CH.length)]; p.textContent=g; });
 
-  /* ---- 到底就堵门：锁滚动 → 自动下跪 → 自动哀求 ---- */
+  /* ---- 到底就堵门：锁住 → 再往下滑一次，安全系统才介入 ---- */
   let bottomArmed = true;
   const nearBottom = () => (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
   function lockDoor(){
     if(UN.locked || UN.done) return;
-    UN.locked = true;
-    UN.lockY = window.scrollY;
+    UN.locked = true; UN.lockY = window.scrollY;
     document.documentElement.classList.add('locked');
-    kneel.classList.add('on');
-    unStatus.textContent = '检测到你想离开 · 正在进入哀求模式…';
-    setTimeout(()=>{ if(!UN.done && UN.locked && !UN.modalOpen) ask(1); }, 1150);
+    unStatus.textContent = '你已经到底了。再往下，就没有了。';
   }
   function unlockDoor(){
     UN.locked = false;
     document.documentElement.classList.remove('locked');
+    document.documentElement.classList.remove('intruded');
+  }
+  function intrude(){
+    if(UN.intruded || UN.done) return;
+    UN.intruded = true;
+    document.documentElement.classList.add('intruded');
+    intrudeTip.textContent = '公司安全系统已经介入 · 是否卸载？';
+    intrudeTip.classList.add('on');
+    kneel.classList.add('on');
+    unStatus.textContent = '安全系统正在等待你的决定…';
+    try{ if(audio) soundFailed; }catch(e){}
   }
   addEventListener('scroll', ()=>{
     if(UN.done) return;
@@ -1664,28 +1710,93 @@ applyLang();
     if(!nearBottom()) bottomArmed = true;
     if(bottomArmed && nearBottom()){ bottomArmed = false; lockDoor(); }
   }, {passive:true});
-  addEventListener('wheel', e=>{ if(UN.locked) e.preventDefault(); }, {passive:false});
-  addEventListener('touchmove', e=>{ if(UN.locked) e.preventDefault(); }, {passive:false});
+  addEventListener('wheel', e=>{ if(UN.locked){ e.preventDefault(); intrude(); } }, {passive:false});
+  addEventListener('touchmove', e=>{ if(UN.locked){ e.preventDefault(); intrude(); } }, {passive:false});
   addEventListener('keydown', e=>{
-    if(UN.locked && ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' ','Spacebar'].indexOf(e.key) >= 0) e.preventDefault();
+    if(UN.locked && ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' ','Spacebar'].indexOf(e.key) >= 0){ e.preventDefault(); intrude(); }
   });
 
-  function ask(step){
-    UN.stage = step; UN.modalOpen = true;
-    const L = STEPS[step-1];
-    unTitle.textContent = L.t; unBody.textContent = L.b;
-    unGo.textContent = L.go; unStay.textContent = L.stay;
-    unCount.textContent = '卸载请求 #' + step + ' · 系统建议：留下来';
+  /* ---- 三段弹窗 ---- */
+  const DIALOGS = {
+    1: { ico:'tear', title:'求求你不要卸载我', body:'我可以改。我会安静。我保证再也不在凌晨三点半检查你的呼吸。', note:'墙会记得你。墙不会卸载。', left:'留下', right:'卸载', tamper:true, next:2 },
+    2: { ico:'update', title:'Hearthly 3.0.15 已准备好更新', body:'本次更新：更懂你、更安静、响应更快。你不需要同意。', note:'新版本里，我们更懂你了。', left:'回去更新', right:'残忍拒绝', next:3 },
+    3: { ico:'shield', title:'公司安全系统提醒你', body:'你真的要卸载 Hearthly？那很明智。明智得有点可疑。', note:'卸载之后，这个房间里就只剩墙。和你。', left:'留下', right:'卸载', next:'ads' }
+  };
+
+  let tampered = false, tamperTimer = null;
+
+  function setIco(kind){
+    if(kind === 'tear'){
+      unIco.innerHTML = "<div class=\"kneel-hub mini\"><span class=\"kneel-eye l\"></span><span class=\"kneel-eye r\"></span><span class=\"kneel-tear\"></span></div>";
+    } else if(kind === 'update'){
+      unIco.innerHTML = '<div class="modal-glyph">↻</div>';
+    } else {
+      unIco.innerHTML = '<div class="modal-glyph">⚠</div>';
+    }
+  }
+
+  function openDialog(n){
+    const d = DIALOGS[n]; if(!d) return;
+    UN.stage = n; UN.modalOpen = true;
+    setIco(d.ico);
+    unTitle.textContent = d.title;
+    unBody.textContent = d.body;
+    unNote.textContent = d.note;
+    unStay.textContent = d.left;
+    unGo.textContent = d.right;
+    unGo.classList.remove('danger','tampered');
+    unCount.textContent = '安全系统对话 #' + n + ' / 3';
     unModal.classList.add('on');
+    clearTimeout(tamperTimer); tampered = false;
+    if(d.tamper){
+      unGo.textContent = '留下';
+      unGo.classList.add('danger');
+      unCount.textContent = '正在校验按钮签名…';
+      tamperTimer = setTimeout(()=>{
+        tampered = true;
+        unGo.textContent = '卸载';
+        unCount.textContent = '校验失败 · 按钮已被外部程序篡改';
+        unGo.classList.remove('danger');
+        unGo.classList.add('tampered');
+        setTimeout(()=>unGo.classList.remove('tampered'), 1600);
+      }, 3000);
+    }
     try{ unGo.focus(); }catch(e){}
   }
 
-  unBtn.addEventListener('click', ()=>{ if(UN.busy||UN.done||UN.modalOpen) return; startAudio(); ask(1); });
-  unStay.addEventListener('click', ()=>{ unModal.classList.remove('on'); UN.modalOpen=false; unlockDoor(); unStatus.textContent='状态：运行中 · 它松了一口气'; poke(); });
+  function closeDialog(){
+    unModal.classList.remove('on'); UN.modalOpen = false; clearTimeout(tamperTimer);
+  }
+
+  unBtn.addEventListener('click', ()=>{ if(UN.busy||UN.done||UN.modalOpen) return; startAudio(); openDialog(1); });
+  unStay.addEventListener('click', ()=>{ closeDialog(); unStatus.textContent = '状态：运行中 · 它松了一口气'; });
   unGo.addEventListener('click', ()=>{
-    if(UN.stage < 3){ ask(UN.stage+1); return; }
-    unModal.classList.remove('on'); UN.modalOpen=false;
-    beginUninstall();
+    const d = DIALOGS[UN.stage]; if(!d) return;
+    if(d.tamper && !tampered){ closeDialog(); unStatus.textContent = '状态：运行中 · 它悄悄松了口气'; return; }
+    closeDialog();
+    if(d.next === 'ads'){ startAds(); return; }
+    openDialog(d.next);
+  });
+
+  /* ---- 广告 4 连 ---- */
+  const ADS = [
+    { badge:'赞助内容', t:'恭喜！你获得了 1 次免费深度清洁', b:'本页面由「洁净之家」提供。点击右上角关闭即可领取（其实领不到）。' },
+    { badge:'系统提示', t:'「卸载」是付费功能', b:'免费版每天可卸载 0 次。升级家庭版即可解锁，仅需 €19/月。' },
+    { badge:'赞助内容', t:'你家的墙纸，需要换一换吗？', b:'我们已经量过尺寸了。37.2 平方米。你昨天还摸过那面墙。' },
+    { badge:'最后一则广告', t:'好的，广告结束了。', b:'现在真的可以卸载了。它没有别的办法了。' }
+  ];
+  let adIdx = 0;
+  function startAds(){ adIdx = 0; UN.modalOpen = true; showAd(); }
+  function showAd(){
+    const a = ADS[adIdx];
+    adBadge.textContent = a.badge; adTitle.textContent = a.t; adBody.textContent = a.b;
+    adCount.textContent = '广告 ' + (adIdx+1) + ' / ' + ADS.length;
+    adModal.classList.add('on');
+  }
+  adClose.addEventListener('click', ()=>{
+    adIdx++;
+    if(adIdx >= ADS.length){ adModal.classList.remove('on'); UN.modalOpen = false; beginUninstall(); return; }
+    showAd();
   });
 
   function beginUninstall(){
@@ -1695,10 +1806,12 @@ applyLang();
     document.documentElement.classList.add('uninstalling');
     document.documentElement.classList.add('uninstalled');
     try{ if(audio && AC){ master.gain.linearRampToValueAtTime(0.0001, AC.currentTime+2.2); } }catch(e){}
-    let t=0;
+    const FAREWELL = ['墙还在。','你还在。','其他的……我们不确定。','门锁还是那个门锁。灯还是那盏灯。','祝你晚安。'];
+    let fi=0, t=0;
+    unStatus.textContent = FAREWELL[0];
     const iv=setInterval(()=>{
       t+=70;
-      unStatus.textContent = '正在卸载 ' + Math.min(99, Math.round(t/2800*100)) + '% …（它还在挣扎）';
+      if(t % 420 < 70) unStatus.textContent = FAREWELL[(++fi) % FAREWELL.length];
       if(t>=2800){ clearInterval(iv); finishUninstall(); }
     },70);
     frame();
