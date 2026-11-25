@@ -1679,15 +1679,9 @@ applyLang();
   const CH = '▓░▒█▚▞▙▟╳§▩▨';
   lines.forEach(p=>{ let g=''; for(let i=0;i<14;i++) g+=CH[Math.floor(Math.random()*CH.length)]; p.textContent=g; });
 
-  /* ---- 到底就堵门：锁住 → 再往下滑一次，安全系统才介入 ---- */
+  /* ---- 到底就显示介入提示，不锁滚动，可以随时往上翻 ---- */
   let bottomArmed = true;
   const nearBottom = () => (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
-  function lockDoor(){
-    if(UN.locked || UN.done) return;
-    UN.locked = true; UN.lockY = window.scrollY;
-    document.documentElement.classList.add('locked');
-    unStatus.textContent = '你已经到底了。再往下，就没有了。';
-  }
   function unlockDoor(){
     UN.locked = false;
     document.documentElement.classList.remove('locked');
@@ -1702,19 +1696,12 @@ applyLang();
     kneel.classList.add('on');
     unStatus.textContent = '安全系统正在等待你的决定…';
     try{ toast('安全提示：本产品已通过 47 项安全认证，其中 46 项由它自己颁发。'); }catch(e){}
-    try{ if(audio) soundFailed; }catch(e){}
   }
   addEventListener('scroll', ()=>{
     if(UN.done) return;
-    if(UN.locked){ if(Math.abs(window.scrollY - UN.lockY) > 2) window.scrollTo(0, UN.lockY); return; }
-    if(!nearBottom()) bottomArmed = true;
-    if(bottomArmed && nearBottom()){ bottomArmed = false; lockDoor(); }
+    if(!nearBottom()){ bottomArmed = true; return; }
+    if(bottomArmed){ bottomArmed = false; intrude(); }
   }, {passive:true});
-  addEventListener('wheel', e=>{ if(UN.locked){ e.preventDefault(); intrude(); } }, {passive:false});
-  addEventListener('touchmove', e=>{ if(UN.locked){ e.preventDefault(); intrude(); } }, {passive:false});
-  addEventListener('keydown', e=>{
-    if(UN.locked && ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' ','Spacebar'].indexOf(e.key) >= 0){ e.preventDefault(); intrude(); }
-  });
 
   /* ---- 三段弹窗 ---- */
   const DIALOGS = {
