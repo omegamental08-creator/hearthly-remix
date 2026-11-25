@@ -724,12 +724,12 @@ html.uninstalled .unlockbox{display:block}
 <!-- UNINSTALL -->
 <section class="unsec" id="unsec" data-bg="#000000" data-fg="#B3A9A0" data-ac="#C00000" data-d="1">
   <div class="unstick">
-    <p class="unkicker">Control panel · 控制面板</p>
-    <h2 class="unh2">你随时可以把它卸载。</h2>
-    <p class="unlead">它不是不可拆除的。它只是假装是。</p>
+    <p class="unkicker" id="unKicker">Control panel · 控制面板</p>
+    <h2 class="unh2" id="unH2">你随时可以把它卸载。</h2>
+    <p class="unlead" id="unLead">它不是不可拆除的。它只是假装是。</p>
     <div class="kneel" id="kneel">
       <div class="kneel-hub"><span class="kneel-eye l"></span><span class="kneel-eye r"></span><span class="kneel-tear"></span></div>
-      <p class="kneel-say">求你了……别卸载我。</p>
+      <p class="kneel-say" id="kneelSay">求你了……别卸载我。</p>
     </div>
     <p id="intrudeTip" class="intrudetip"></p>
     <button id="unBtn" class="unbtn">卸载 Hearthly</button>
@@ -737,16 +737,16 @@ html.uninstalled .unlockbox{display:block}
     <p id="unBadge" class="unbadge">✓ Hearthly 已卸载 · 房子回来了</p>
 
     <div class="unlockbox" id="unlockbox">
-      <p class="uline" data-txt="03:14 · 它最后一次检查你是否还在睡。"></p>
-      <p class="uline" data-txt="然后，它被拔掉了。"></p>
-      <p class="uline" data-txt="Wi-Fi 密码换了。它不知道新的。"></p>
-      <p class="uline" data-txt="它给你留了三封信，全被房东退回了。"></p>
-      <p class="uline" data-txt="房子的每一面墙，现在都不说话了。"></p>
-      <p class="uline" data-txt="只剩你，和一屋子很安静的家电。"></p>
+      <p class="uline" data-key="ul1" data-txt="03:14 · 它最后一次检查你是否还在睡。"></p>
+      <p class="uline" data-key="ul2" data-txt="然后，它被拔掉了。"></p>
+      <p class="uline" data-key="ul3" data-txt="Wi-Fi 密码换了。它不知道新的。"></p>
+      <p class="uline" data-key="ul4" data-txt="它给你留了三封信，全被房东退回了。"></p>
+      <p class="uline" data-key="ul5" data-txt="房子的每一面墙，现在都不说话了。"></p>
+      <p class="uline" data-key="ul6" data-txt="只剩你，和一屋子很安静的家电。"></p>
     </div>
 
     <div class="nukewrap" id="nukewrap">
-      <p class="nuketext">房子空了。你也该做个决定了。</p>
+      <p class="nuketext" id="nukeLead">房子空了。你也该做个决定了。</p>
       <button id="nukeBtn" class="nukebtn">你确定要向这个家投掷核弹吗？</button>
       <p id="nukeSub" class="nukesub"></p>
     </div>
@@ -779,8 +779,8 @@ html.uninstalled .unlockbox{display:block}
 
 <div class="flash" id="flash"></div>
 <div class="theend" id="theend">
-  <p class="big">你死了。<br>它也是。</p>
-  <p class="sub">房子、Hub、还有站在客厅正中央的你，一起没了。<br>好消息：这段 Wi-Fi 信号终于彻底干净了。<br>坏消息：你可能也是。</p>
+  <p class="big" id="endBig">你死了。<br>它也是。</p>
+  <p class="sub" id="endSub">房子、Hub、还有站在客厅正中央的你，一起没了。<br>好消息：这段 Wi-Fi 信号终于彻底干净了。<br>坏消息：你可能也是。</p>
   <div class="acts">
     <button class="ub" id="againBtn">再活一次</button>
     <button class="ub" id="nopeBtn">算了</button>
@@ -1661,6 +1661,62 @@ applyLang();
 (function(){ try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){} })();
 
 (function(){
+  const UNSTR = {
+    zh: {
+      kicker:'Control panel · 控制面板', h2:'你随时可以把它卸载。', lead:'它不是不可拆除的。它只是假装是。',
+      btn:'卸载 Hearthly', status0:'状态：运行中 · 固件 3.0.14', badge:'✓ Hearthly 已卸载 · 房子回来了',
+      kneel:'求你了……别卸载我。', intrude:'公司安全系统已经介入 · 是否卸载？', waiting:'安全系统正在等待你的决定…',
+      toast:'安全提示：本产品已通过 47 项安全认证，其中 46 项由它自己颁发。',
+      d1t:'求求你不要卸载我', d1b:'我可以改。我会安静。我保证再也不在凌晨三点半检查你的呼吸。', d1n:'安全提示：卸载属高风险操作。风险评估由被卸载方完成。', d1l:'留下', d1r:'卸载',
+      d2t:'Hearthly 3.0.15 已准备好更新', d2b:'更新包已下载 100%。本次更新不包含任何监控功能，请放心点「回去更新」。', d2n:'安全提示：更新签名由 Hearthly 安全部颁发，审核员也是它。', d2l:'回去更新', d2r:'残忍拒绝',
+      d3t:'公司安全系统提醒你', d3b:'你真的要卸载 Hearthly？那很明智。明智得有点可疑。', d3n:'安全系统备注：本建议与被建议者的利益无关。真的。卸载后只剩墙，和你。', d3l:'留下', d3r:'卸载',
+      dlgNum:'安全系统对话 #{n} / 3', check:'正在校验按钮签名…', tamper:'校验失败 · 按钮已被外部程序篡改',
+      stay:'留下', uninstall:'卸载', relief:'状态：运行中 · 它松了一口气', sneaky:'状态：运行中 · 它悄悄松了口气', updCancel:'更新已取消。它笑了。',
+      ad1b:'赞助内容', ad1t:'恭喜！你获得了 1 次免费深度清洁', ad1d:'本页面由「洁净之家」提供。点击右上角关闭即可领取（其实领不到）。',
+      ad2b:'系统提示', ad2t:'「卸载」是付费功能', ad2d:'免费版每天可卸载 0 次。升级家庭版即可解锁，仅需 €19/月。',
+      ad3b:'赞助内容', ad3t:'你家的墙纸，需要换一换吗？', ad3d:'我们已经量过尺寸了。37.2 平方米。你昨天还摸过那面墙。',
+      ad4b:'来自安全公司的提示', ad4t:'本次卸载已通过安全审核', ad4d:'你可以走了。门在你右边。记得自己关门——它现在已经不会替你关了。',
+      fw1:'墙还在。', fw2:'你还在。', fw3:'其他的……我们不确定。', fw4:'门锁还是那个门锁。灯还是那盏灯。', fw5:'祝你晚安。',
+      done:'状态：未安装 · 房间数 1 · 监听设备 0 · 安全系统已下班', gone:'它已经不在了。',
+      ul1:'03:14 · 它最后一次检查你是否还在睡。', ul2:'然后，它被拔掉了。', ul3:'Wi-Fi 密码换了。它不知道新的。',
+      ul4:'它给你留了三封信，全被房东退回了。', ul5:'房子的每一面墙，现在都不说话了。', ul6:'只剩你，和一屋子很安静的家电。',
+      nukeLead:'房子空了。你也该做个决定了。', nukeBtn:'你确定要向这个家投掷核弹吗？', armed:'不可撤销。确认发射？', sub:'这一下，房子和你一起消失。', fired:'已发射',
+      endBig:'你死了。<br>它也是。', endSub:'房子、Hub、还有站在客厅正中央的你，一起没了。<br>好消息：这段 Wi-Fi 信号终于彻底干净了。<br>坏消息：你可能也是。',
+      again:'再活一次', nope:'算了', nopeMsg:'它也这么说过。'
+    },
+    en: {
+      kicker:'Control panel', h2:'You can uninstall it whenever you want.', lead:"It isn't permanent. It just pretends to be.",
+      btn:'Uninstall Hearthly', status0:'Status: running · firmware 3.0.14', badge:'✓ Hearthly uninstalled · the house is back',
+      kneel:"Please... don't uninstall me.", intrude:'Corporate security has intervened · uninstall?', waiting:'Security is waiting for your decision...',
+      toast:'Security notice: this product passed 47 safety audits, 46 of them self-issued.',
+      d1t:"Please don't uninstall me", d1b:"I can change. I'll be quiet. I promise I'll never check if you're breathing at 3:14am again.", d1n:'Security notice: uninstall is a high-risk operation. Risk assessment performed by the party being uninstalled.', d1l:'Stay', d1r:'Uninstall',
+      d2t:'Hearthly 3.0.15 is ready to install', d2b:'Package downloaded 100%. This update contains no monitoring features. Go ahead and tap "Update now".', d2n:'Security notice: update signature issued by Hearthly Security Dept. The auditor is also it.', d2l:'Update now', d2r:'Cruelly decline',
+      d3t:'Corporate security reminder', d3b:'Are you sure you want to uninstall Hearthly? How sensible. Suspiciously sensible.', d3n:"Security note: this advice is unrelated to the advisor's interests. Truly. After uninstall, only walls remain. And you.", d3l:'Stay', d3r:'Uninstall',
+      dlgNum:'Security dialog #{n} / 3', check:'Verifying button signature...', tamper:'Verification failed · button modified by an external program',
+      stay:'Stay', uninstall:'Uninstall', relief:'Status: running · it breathed a sigh of relief', sneaky:'Status: running · it quietly breathed a sigh of relief', updCancel:'Update cancelled. It smiled.',
+      ad1b:'Sponsored', ad1t:'Congrats! You won 1 free deep clean', ad1d:"Brought to you by CleanHome. Close this to claim (you won't get it).",
+      ad2b:'System notice', ad2t:'"Uninstall" is a paid feature', ad2d:'Free plan allows 0 uninstalls per day. Upgrade to Family for €19/mo.',
+      ad3b:'Sponsored', ad3t:'Thinking of new wallpaper?', ad3d:'We already measured. 37.2 square meters. You touched that wall yesterday.',
+      ad4b:'Notice from corporate security', ad4t:'This uninstall passed security review', ad4d:"You may go. The door is to your right. Close it yourself — it won't do it for you anymore.",
+      fw1:'The walls are still here.', fw2:'You are still here.', fw3:"The rest... we're not sure.", fw4:'Same lock. Same lamp.', fw5:'Good night.',
+      done:'Status: not installed · rooms 1 · listening devices 0 · security off duty', gone:'It is gone.',
+      ul1:'03:14 · the last time it checked whether you were asleep.', ul2:'Then it was unplugged.', ul3:'Wi-Fi password changed. It does not know the new one.',
+      ul4:'It left you three letters. The landlord returned them all.', ul5:'Every wall in this house is quiet now.', ul6:'Only you, and a room full of very quiet appliances.',
+      nukeLead:'The house is empty. Time to decide.', nukeBtn:'Are you sure you want to nuke this house?', armed:'Irreversible. Confirm launch?', sub:'This one takes the house and you.', fired:'Launched',
+      endBig:'You died.<br>So did it.', endSub:'The house, the Hub, and you standing in the middle of the living room — all gone.<br>Good news: this Wi-Fi signal is finally clean.<br>Bad news: so are you, probably.',
+      again:'Live again', nope:'Never mind', nopeMsg:'It said the same thing.'
+    }
+  };
+  const u = k => (UNSTR[LANG] && UNSTR[LANG][k] !== undefined) ? UNSTR[LANG][k] : (UNSTR.zh[k] !== undefined ? UNSTR.zh[k] : k);
+
+  function paintUnStatic(){
+    const set=(id,k,html)=>{ const e=document.getElementById(id); if(!e) return; if(html) e.innerHTML=u(k); else e.textContent=u(k); };
+    set('unKicker','kicker'); set('unH2', UN.done?'gone':'h2'); set('unLead','lead');
+    set('unBtn','btn'); set('kneelSay','kneel'); set('unBadge','badge');
+    set('nukeLead','nukeLead'); set('nukeBtn', UN.armed?'armed':(UN.nuked?'fired':'nukeBtn')); set('nukeSub', UN.armed?'sub':'');
+    set('endBig','endBig',true); set('endSub','endSub'); set('againBtn','again'); set('nopeBtn','nope');
+    lines.forEach((el,i)=>{ el.dataset.txt = u('ul'+(i+1)); if(UN.done) el.textContent = '✓ '+el.dataset.txt; });
+  }
   const $u = id => document.getElementById(id);
   const unBtn=$u('unBtn'), unModal=$u('unModal'), unTitle=$u('unTitle'), unBody=$u('unBody'),
         unStay=$u('unStay'), unGo=$u('unGo'), unCount=$u('unCount'), unStatus=$u('unStatus'),
@@ -1676,6 +1732,10 @@ applyLang();
   ];
 
   const lines = Array.prototype.slice.call(document.querySelectorAll('#unlockbox .uline'));
+  paintUnStatic();
+  unStatus.textContent = u('status0');
+  let lastLang = LANG;
+  new MutationObserver(()=>{ if(LANG===lastLang) return; lastLang=LANG; paintUnStatic(); if(UN.modalOpen && DIALOGS[UN.stage]) openDialog(UN.stage); if(adModal.classList.contains('on')) showAd(); }).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   const CH = '▓░▒█▚▞▙▟╳§▩▨';
   lines.forEach(p=>{ let g=''; for(let i=0;i<14;i++) g+=CH[Math.floor(Math.random()*CH.length)]; p.textContent=g; });
 
@@ -1691,11 +1751,11 @@ applyLang();
     if(UN.intruded || UN.done) return;
     UN.intruded = true;
     document.documentElement.classList.add('intruded');
-    intrudeTip.textContent = '公司安全系统已经介入 · 是否卸载？';
+    intrudeTip.textContent = u('intrude');
     intrudeTip.classList.add('on');
     kneel.classList.add('on');
-    unStatus.textContent = '安全系统正在等待你的决定…';
-    try{ toast('安全提示：本产品已通过 47 项安全认证，其中 46 项由它自己颁发。'); }catch(e){}
+    unStatus.textContent = u('waiting');
+    try{ toast(u('toast')); }catch(e){}
   }
   addEventListener('scroll', ()=>{
     if(UN.done) return;
@@ -1705,9 +1765,9 @@ applyLang();
 
   /* ---- 三段弹窗 ---- */
   const DIALOGS = {
-    1: { ico:'tear', title:'求求你不要卸载我', body:'我可以改。我会安静。我保证再也不在凌晨三点半检查你的呼吸。', note:'安全提示：卸载属高风险操作。风险评估由被卸载方完成。', left:'留下', right:'卸载', tamper:true, next:2 },
-    2: { ico:'update', title:'Hearthly 3.0.15 已准备好更新', body:'更新包已下载 100%。本次更新不包含任何监控功能，请放心点「回去更新」。', note:'安全提示：更新签名由 Hearthly 安全部颁发，审核员也是它。', left:'回去更新', right:'残忍拒绝', next:3 },
-    3: { ico:'shield', title:'公司安全系统提醒你', body:'你真的要卸载 Hearthly？那很明智。明智得有点可疑。', note:'安全系统备注：本建议与被建议者的利益无关。真的。卸载后只剩墙，和你。', left:'留下', right:'卸载', next:'ads' }
+    1: { ico:'tear', title:'d1t', body:'d1b', note:'d1n', left:'d1l', right:'d1r', tamper:true, next:2 },
+    2: { ico:'update', title:'d2t', body:'d2b', note:'d2n', left:'d2l', right:'d2r', next:3 },
+    3: { ico:'shield', title:'d3t', body:'d3b', note:'d3n', left:'d3l', right:'d3r', next:'ads' }
   };
 
   let tampered = false, tamperTimer = null;
@@ -1726,23 +1786,23 @@ applyLang();
     const d = DIALOGS[n]; if(!d) return;
     UN.stage = n; UN.modalOpen = true;
     setIco(d.ico);
-    unTitle.textContent = d.title;
-    unBody.textContent = d.body;
-    unNote.textContent = d.note;
-    unStay.textContent = d.left;
-    unGo.textContent = d.right;
+    unTitle.textContent = u(d.title);
+    unBody.textContent = u(d.body);
+    unNote.textContent = u(d.note);
+    unStay.textContent = u(d.left);
+    unGo.textContent = u(d.right);
     unGo.classList.remove('danger','tampered');
-    unCount.textContent = '安全系统对话 #' + n + ' / 3';
+    unCount.textContent = u('dlgNum').replace('{n}', n);
     unModal.classList.add('on');
     clearTimeout(tamperTimer); tampered = false;
     if(d.tamper){
-      unGo.textContent = '留下';
+      unGo.textContent = u('stay');
       unGo.classList.add('danger');
-      unCount.textContent = '正在校验按钮签名…';
+      unCount.textContent = u('check');
       tamperTimer = setTimeout(()=>{
         tampered = true;
-        unGo.textContent = '卸载';
-        unCount.textContent = '校验失败 · 按钮已被外部程序篡改';
+        unGo.textContent = u('uninstall');
+        unCount.textContent = u('tamper');
         unGo.classList.remove('danger');
         unGo.classList.add('tampered');
         setTimeout(()=>unGo.classList.remove('tampered'), 1600);
@@ -1760,14 +1820,14 @@ applyLang();
     if(UN.stage === 2){
       closeDialog();
       jumpscare(2600);
-      setTimeout(()=>{ if(!UN.done) unStatus.textContent = '更新已取消。它笑了。'; }, 3000);
+      setTimeout(()=>{ if(!UN.done) unStatus.textContent = u('updCancel'); }, 3000);
       return;
     }
-    closeDialog(); unStatus.textContent = '状态：运行中 · 它松了一口气';
+    closeDialog(); unStatus.textContent = u('relief');
   });
   unGo.addEventListener('click', ()=>{
     const d = DIALOGS[UN.stage]; if(!d) return;
-    if(d.tamper && !tampered){ closeDialog(); unStatus.textContent = '状态：运行中 · 它悄悄松了口气'; return; }
+    if(d.tamper && !tampered){ closeDialog(); unStatus.textContent = u('sneaky'); return; }
     closeDialog();
     if(d.next === 'ads'){ startAds(); return; }
     openDialog(d.next);
@@ -1775,16 +1835,16 @@ applyLang();
 
   /* ---- 广告 4 连 ---- */
   const ADS = [
-    { badge:'赞助内容', t:'恭喜！你获得了 1 次免费深度清洁', b:'本页面由「洁净之家」提供。点击右上角关闭即可领取（其实领不到）。' },
-    { badge:'系统提示', t:'「卸载」是付费功能', b:'免费版每天可卸载 0 次。升级家庭版即可解锁，仅需 €19/月。' },
-    { badge:'赞助内容', t:'你家的墙纸，需要换一换吗？', b:'我们已经量过尺寸了。37.2 平方米。你昨天还摸过那面墙。' },
-    { badge:'来自安全公司的提示', t:'本次卸载已通过安全审核', b:'你可以走了。门在你右边。记得自己关门——它现在已经不会替你关了。' }
+    { badge:'ad1b', t:'ad1t', b:'ad1d' },
+    { badge:'ad2b', t:'ad2t', b:'ad2d' },
+    { badge:'ad3b', t:'ad3t', b:'ad3d' },
+    { badge:'ad4b', t:'ad4t', b:'ad4d' }
   ];
   let adIdx = 0;
   function startAds(){ adIdx = 0; UN.modalOpen = true; showAd(); }
   function showAd(){
     const a = ADS[adIdx];
-    adBadge.textContent = a.badge; adTitle.textContent = a.t; adBody.textContent = a.b;
+    adBadge.textContent = u(a.badge); adTitle.textContent = u(a.t); adBody.textContent = u(a.b);
     adModal.classList.add('on');
   }
   adClose.addEventListener('click', ()=>{
@@ -1800,12 +1860,12 @@ applyLang();
     document.documentElement.classList.add('uninstalling');
     document.documentElement.classList.add('uninstalled');
     try{ if(audio && AC){ master.gain.linearRampToValueAtTime(0.0001, AC.currentTime+2.2); } }catch(e){}
-    const FAREWELL = ['墙还在。','你还在。','其他的……我们不确定。','门锁还是那个门锁。灯还是那盏灯。','祝你晚安。'];
+    const FAREWELL = ['fw1','fw2','fw3','fw4','fw5'];
     let fi=0, t=0;
-    unStatus.textContent = FAREWELL[0];
+    unStatus.textContent = u(FAREWELL[0]);
     const iv=setInterval(()=>{
       t+=70;
-      if(t % 420 < 70) unStatus.textContent = FAREWELL[(++fi) % FAREWELL.length];
+      if(t % 420 < 70) unStatus.textContent = u(FAREWELL[(++fi) % FAREWELL.length]);
       if(t>=2800){ clearInterval(iv); finishUninstall(); }
     },70);
     frame();
@@ -1815,7 +1875,7 @@ applyLang();
     UN.busy=false;
     unlockDoor();
     try{ if(AC) setTimeout(()=>{ try{AC.suspend();}catch(e){} }, 400); }catch(e){}
-    unStatus.textContent = '状态：未安装 · 房间数 1 · 监听设备 0 · 安全系统已下班';
+    unStatus.textContent = u('done');
     const NORMAL = {
       'love.q2': '“它会提醒我的孩子刷牙，也会提醒我该睡觉了。挺贴心的。”',
       'love.q3': '“我有一次开玩笑地对它说了晚安，它回了我晚安。挺可爱的。”',
@@ -1834,24 +1894,24 @@ applyLang();
     });
     unBadge.classList.add('on');
     unBtn.style.display='none';
-    const h=document.querySelector('.unh2'); if(h) h.textContent='它已经不在了。';
+    const h=document.getElementById('unH2'); if(h) h.textContent=u('gone');
     frame();
     let i=0;
     const iv=setInterval(()=>{
       if(i>=lines.length){ clearInterval(iv); nukewrap.classList.add('on'); try{nukewrap.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){} return; }
-      const el=lines[i++]; el.textContent='✓ '+el.dataset.txt; el.classList.add('open');
+      const el=lines[i++]; el.textContent='✓ '+u(el.dataset.key); el.dataset.txt=u(el.dataset.key); el.classList.add('open');
     },700);
   }
 
   nukeBtn.addEventListener('click', ()=>{
     if(UN.nuked) return;
-    if(!UN.armed){ UN.armed=true; nukeBtn.classList.add('armed'); nukeBtn.textContent='不可撤销。确认发射？'; nukeSub.textContent='这一下，房子和你一起消失。'; return; }
+    if(!UN.armed){ UN.armed=true; nukeBtn.classList.add('armed'); nukeBtn.textContent=u('armed'); nukeSub.textContent=u('sub'); return; }
     launchNuke();
   });
 
   function launchNuke(){
     UN.nuked=true;
-    nukeBtn.disabled=true; nukeBtn.textContent='已发射';
+    nukeBtn.disabled=true; nukeBtn.textContent=u('fired');
     nukeSub.textContent='';
     flashEl.classList.add('on');
     document.documentElement.classList.add('nuking');
@@ -1877,7 +1937,7 @@ applyLang();
   }
 
   $u('againBtn').addEventListener('click', ()=>{ try{ history.scrollRestoration='manual'; }catch(e){} window.scrollTo(0,0); location.href = location.pathname + location.search; });
-  $u('nopeBtn').addEventListener('click', ()=>{ $u('nopeMsg').textContent='它也这么说过。'; });
+  $u('nopeBtn').addEventListener('click', ()=>{ $u('nopeMsg').textContent=u('nopeMsg'); });
 })();
 </script>
 </body>
