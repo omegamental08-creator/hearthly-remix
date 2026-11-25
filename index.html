@@ -1623,6 +1623,8 @@ langBtn.addEventListener('click', ()=> setLang(LANG === 'zh' ? 'en' : 'zh', true
 syncLangBtn();
 applyLang();
 /* ================= UNINSTALL → NUKE (add-on) ================= */
+(function(){ try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){} })();
+
 (function(){
   const $u = id => document.getElementById(id);
   const unBtn=$u('unBtn'), unModal=$u('unModal'), unTitle=$u('unTitle'), unBody=$u('unBody'),
@@ -1767,7 +1769,7 @@ applyLang();
     }catch(e){}
   }
 
-  $u('againBtn').addEventListener('click', ()=>location.reload());
+  $u('againBtn').addEventListener('click', ()=>{ try{ history.scrollRestoration='manual'; }catch(e){} window.scrollTo(0,0); location.href = location.pathname + location.search; });
   $u('nopeBtn').addEventListener('click', ()=>{ $u('nopeMsg').textContent='它也这么说过。'; });
 })();
 </script>
