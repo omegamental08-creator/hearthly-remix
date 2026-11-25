@@ -293,6 +293,9 @@ html.locked .unbtn{animation:begPulse 1.5s infinite}
 @keyframes begPulse{50%{box-shadow:0 0 0 14px rgba(140,17,9,.15);transform:scale(1.04)}}
 html.locked body::after{content:"";position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 180px 46px rgba(0,0,0,.6);z-index:60;transition:box-shadow .7s}
 html.uninstalled .kneel{display:none !important}
+html.uninstalled #eyes{display:none !important}
+html.nuking body > *{filter:blur(11px);transform:scale(1.02);transition:filter 1.6s ease,transform 1.6s ease}
+html.nuking body > .theend,html.nuking body > .flash,html.nuking body > script{filter:none !important;transform:none !important}
 
 .unbtn{font-family:inherit;font-weight:800;font-size:17px;padding:16px 36px;border-radius:999px;border:1.5px solid #8c1109;background:transparent;color:#e4553c;cursor:pointer;transition:.2s;letter-spacing:-.01em}
 .unbtn:hover{background:#8c1109;color:#fff;transform:translateY(-1px)}
@@ -1704,6 +1707,22 @@ applyLang();
     unlockDoor();
     try{ if(AC) setTimeout(()=>{ try{AC.suspend();}catch(e){} }, 400); }catch(e){}
     unStatus.textContent = '状态：未安装 · 房间数 1 · 监听设备 0';
+    const NORMAL = {
+      'love.q2': '“它会提醒我的孩子刷牙，也会提醒我该睡觉了。挺贴心的。”',
+      'love.q3': '“我有一次开玩笑地对它说了晚安，它回了我晚安。挺可爱的。”',
+      'love.place3': '美国俄勒冈州波特兰',
+      'love.updated': '评分 ★★★★★ · 3,412 条评价',
+      'blog.p1p': '暖色灯光、柔软织物，还有厚实的窗帘，都能让冬天的家更舒服。',
+      'blog.p2t': '卧室门开着还是关着？一篇睡眠舒适度指南',
+      'blog.p2p': '主要看通风、温度和你的个人习惯。',
+      'blog.p3meta': '指南 · 8 分钟阅读',
+      'blog.p3t': '如何把闲置阁楼改造成储物空间',
+      'blog.p3p': '先检查保温层、通风和承重，再动手。'
+    };
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const k = el.getAttribute('data-i18n');
+      if(NORMAL[k] !== undefined) el.textContent = NORMAL[k];
+    });
     unBadge.classList.add('on');
     unBtn.style.display='none';
     const h=document.querySelector('.unh2'); if(h) h.textContent='它已经不在了。';
@@ -1726,10 +1745,10 @@ applyLang();
     nukeBtn.disabled=true; nukeBtn.textContent='已发射';
     nukeSub.textContent='';
     flashEl.classList.add('on');
-    try{ document.body.classList.add('shake'); }catch(e){}
+    document.documentElement.classList.add('nuking');
     boom();
     setTimeout(()=>flashEl.classList.remove('on'), 380);
-    setTimeout(()=>{ document.body.classList.remove('shake'); theend.classList.add('on'); }, 1150);
+    setTimeout(()=>{ theend.classList.add('on'); }, 1700);
   }
 
   function boom(){
