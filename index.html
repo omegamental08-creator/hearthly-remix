@@ -1701,6 +1701,7 @@ applyLang();
     intrudeTip.classList.add('on');
     kneel.classList.add('on');
     unStatus.textContent = '安全系统正在等待你的决定…';
+    try{ toast('安全提示：本产品已通过 47 项安全认证，其中 46 项由它自己颁发。'); }catch(e){}
     try{ if(audio) soundFailed; }catch(e){}
   }
   addEventListener('scroll', ()=>{
@@ -1717,9 +1718,9 @@ applyLang();
 
   /* ---- 三段弹窗 ---- */
   const DIALOGS = {
-    1: { ico:'tear', title:'求求你不要卸载我', body:'我可以改。我会安静。我保证再也不在凌晨三点半检查你的呼吸。', note:'墙会记得你。墙不会卸载。', left:'留下', right:'卸载', tamper:true, next:2 },
-    2: { ico:'update', title:'Hearthly 3.0.15 已准备好更新', body:'本次更新：更懂你、更安静、响应更快。你不需要同意。', note:'新版本里，我们更懂你了。', left:'回去更新', right:'残忍拒绝', next:3 },
-    3: { ico:'shield', title:'公司安全系统提醒你', body:'你真的要卸载 Hearthly？那很明智。明智得有点可疑。', note:'卸载之后，这个房间里就只剩墙。和你。', left:'留下', right:'卸载', next:'ads' }
+    1: { ico:'tear', title:'求求你不要卸载我', body:'我可以改。我会安静。我保证再也不在凌晨三点半检查你的呼吸。', note:'安全提示：卸载属高风险操作。风险评估由被卸载方完成。', left:'留下', right:'卸载', tamper:true, next:2 },
+    2: { ico:'update', title:'Hearthly 3.0.15 已准备好更新', body:'更新包已下载 100%。本次更新不包含任何监控功能，请放心点「回去更新」。', note:'安全提示：更新签名由 Hearthly 安全部颁发，审核员也是它。', left:'回去更新', right:'残忍拒绝', next:3 },
+    3: { ico:'shield', title:'公司安全系统提醒你', body:'你真的要卸载 Hearthly？那很明智。明智得有点可疑。', note:'安全系统备注：本建议与被建议者的利益无关。真的。卸载后只剩墙，和你。', left:'留下', right:'卸载', next:'ads' }
   };
 
   let tampered = false, tamperTimer = null;
@@ -1768,7 +1769,15 @@ applyLang();
   }
 
   unBtn.addEventListener('click', ()=>{ if(UN.busy||UN.done||UN.modalOpen) return; startAudio(); openDialog(1); });
-  unStay.addEventListener('click', ()=>{ closeDialog(); unStatus.textContent = '状态：运行中 · 它松了一口气'; });
+  unStay.addEventListener('click', ()=>{
+    if(UN.stage === 2){
+      closeDialog();
+      jumpscare();
+      setTimeout(()=>{ if(!UN.done) unStatus.textContent = '更新已取消。它笑了。'; }, 1100);
+      return;
+    }
+    closeDialog(); unStatus.textContent = '状态：运行中 · 它松了一口气';
+  });
   unGo.addEventListener('click', ()=>{
     const d = DIALOGS[UN.stage]; if(!d) return;
     if(d.tamper && !tampered){ closeDialog(); unStatus.textContent = '状态：运行中 · 它悄悄松了口气'; return; }
@@ -1819,7 +1828,7 @@ applyLang();
     UN.busy=false;
     unlockDoor();
     try{ if(AC) setTimeout(()=>{ try{AC.suspend();}catch(e){} }, 400); }catch(e){}
-    unStatus.textContent = '状态：未安装 · 房间数 1 · 监听设备 0';
+    unStatus.textContent = '状态：未安装 · 房间数 1 · 监听设备 0 · 安全系统已下班';
     const NORMAL = {
       'love.q2': '“它会提醒我的孩子刷牙，也会提醒我该睡觉了。挺贴心的。”',
       'love.q3': '“我有一次开玩笑地对它说了晚安，它回了我晚安。挺可爱的。”',
