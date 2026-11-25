@@ -1580,7 +1580,7 @@ function poke(){
 }
 
 /* ================= JUMPSCARE ================= */
-function jumpscare(){
+function jumpscare(holdMs){
   inside = true;
   const sc=$('#scare'); sc.classList.add('on');
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches) document.body.classList.add('shake');
@@ -1590,7 +1590,7 @@ function jumpscare(){
     $('#inside').style.opacity=1;
     applyScareText();
     frame();
-  }, 950);
+  }, holdMs || 950);
 }
 
 /* ================= AUDIO ================= */
@@ -1759,8 +1759,8 @@ applyLang();
   unStay.addEventListener('click', ()=>{
     if(UN.stage === 2){
       closeDialog();
-      jumpscare();
-      setTimeout(()=>{ if(!UN.done) unStatus.textContent = '更新已取消。它笑了。'; }, 1100);
+      jumpscare(2600);
+      setTimeout(()=>{ if(!UN.done) unStatus.textContent = '更新已取消。它笑了。'; }, 3000);
       return;
     }
     closeDialog(); unStatus.textContent = '状态：运行中 · 它松了一口气';
